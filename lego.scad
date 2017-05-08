@@ -1,7 +1,10 @@
 /*
 Parametric LEGO Block
 
-Also published at http://www.thingiverse.com/paulirotta/about       UPDATE
+Published at
+    http://www.thingiverse.com/thing:2303714
+Maintained at
+    https://github.com/paulirotta/parametric_lego
 
 By Paul Houghton
 Twitter: @mobile_rat
@@ -17,11 +20,11 @@ Import this into other design files:
 
 /* [LEGO Options] */
 
-// Top connector size tweak (0 is nominal spec for ABS. Try -0.05 for PLA, NGEN and other stiff plastic if the top connector is too tight)
-top_connector_tweak = 0; //-0.05;
+// Top connector size tweak => 0 for ABS, -0.05 for PLA/ NGEN/less tight
+top_connector_tweak = 0;
 
-// Bottom connector size tweak (0 is nominal spec for ABS, Try -0.05 for NGEN, PLA and other stiff stiff plastic if the bottom connector is too tight)
-bottom_connector_tweak = 0; //-0.05;
+// Bottom connector size tweak => 0 for ABS, -0.05 for PLA/NGEN/less tight
+bottom_connector_tweak = 0;
 
 // Number of facets to form a circle
 $fn=32;
