@@ -30,13 +30,13 @@ blocks_y = 4;
 blocks_z = 1;
 
 // Top connector size tweak => 0 for ABS, 0.04 for tighter, -0.04 for PLA/NGEN/less tight
-top_connector_tweak = -0.04;
+top_connector_tweak = -0.00;
 
 // Bottom connector size tweak => 0 for ABS, -0.04 for tighter, 0.04 for bigger/PLA/NGEN/less tight
-bottom_connector_tweak = 0.04;
+bottom_connector_tweak = 0.00;
 
 // Number of facets to form a circle (big numbers are more round which affects fit, but may take a long time to render)
-$fn=64;
+rounding=16;
 
 // Clearance space on the outer surface of bricks
 skin = 0.1;
@@ -89,76 +89,79 @@ increment = 0.02;
 /////////////////////////////////////
 
 // Test display, uncomment only one of the following lines at a time
-lego(x=blocks_x, y=blocks_y, z=blocks_z, bottom_size_tweak=bottom_connector_tweak, top_size_tweak=top_connector_tweak); // A single block
+//lego(x=blocks_x, y=blocks_y, z=blocks_z, bottom_size_tweak=bottom_connector_tweak, top_size_tweak=top_connector_tweak, fn=fn); // A single block
 
-//lego_calibration_set(); // A set of blocks for testing which tweak parameters to use on your printer and plastic
+lego_calibration_set(fn=8); // A set of blocks for testing which tweak parameters to use on your printer and plastic
 
-//lego_panel(x=blocks_x, y=blocks_y, top_size_tweak=top_connector_tweak);
+//lego_panel(x=blocks_x, y=blocks_y, top_size_tweak=top_connector_tweak, fn=fn);
 
 /////////////////////////////////////
 
-module lego_panel(x=3,y=3, top_size_tweak=0) {
+module lego_panel(x=3,y=3, top_size_tweak=0, fn=rounding) {
+    $fn = fn;
     difference() {
         intersection() {
-            lego(x,y,1,bottom_connector_tweak,top_connector_tweak);
+            lego(x, y, 1, bottom_connector_tweak, top_connector_tweak, fn);
             translate([0,0,cut_line_height])
                 cube([10000,10000,10000]);
         }
         union() {
-            screw_hole(1,1);
-            screw_hole(1,y);
-            screw_hole(x,1);
-            screw_hole(x,y);
+            screw_hole(1, 1, fn);
+            screw_hole(1, y, fn);
+            screw_hole(x, 1, fn);
+            screw_hole(x, y, fn);
         }
     }
 }
 
 // A set of blocks with different tweak parameters written on the side
-module lego_calibration_set(x=2,y=4) {
-    lego_calibration_block(x,y,0,0);
+module lego_calibration_set(x=2, y=4, fn=rounding) {
+    $fn = fn;
+    lego_calibration_block(x, y, 0, 0, fn);
     
     translate([block_width*3, 0,0])
-        lego_calibration_block(x,y,increment,-increment);
+        lego_calibration_block(x,y,increment,-increment, fn);
     
     translate([block_width*6, 0,0])
-        lego_calibration_block(x,y,2*increment,-2*increment);
+        lego_calibration_block(x,y,2*increment,-2*increment, fn);
     
     translate([block_width*9, 0,0])
-        lego_calibration_block(x,y,3*increment,-3*increment);
+        lego_calibration_block(x,y,3*increment,-3*increment, fn);
     
     translate([block_width*12, 0,0])
-        lego_calibration_block(x,y,4*increment,-4*increment);
+        lego_calibration_block(x,y,4*increment,-4*increment, fn);
     
     translate([block_width*3, block_width*5, 0])
-        lego_calibration_block(x,y,-increment,increment);
+        lego_calibration_block(x,y,-increment,increment, fn);
     
     translate([block_width*6, block_width*5, 0])
-        lego_calibration_block(x,y,-2*increment,2*increment);
+        lego_calibration_block(x,y,-2*increment,2*increment, fn);
     
     translate([block_width*9, block_width*5, 0])
-        lego_calibration_block(x,y,-3*increment,3*increment);
+        lego_calibration_block(x,y,-3*increment,3*increment, fn);
     
     translate([block_width*12, block_width*5, 0])
-        lego_calibration_block(x,y,-4*increment,4*increment);
+        lego_calibration_block(x,y,-4*increment,4*increment, fn);
 }
 
 // A block with the tweak parameters written on the side
-module lego_calibration_block(x=2,y=4,bottom_size_tweak=0,top_size_tweak=0) {
+module lego_calibration_block(x=2, y=4, bottom_size_tweak=0, top_size_tweak=0, fn=rounding) {
+    $fn = fn;
     difference() {
-        lego(x,y,1,bottom_size_tweak,top_size_tweak);
+        lego(x, y, 1, bottom_size_tweak, top_size_tweak, fn);
 
         union() {
-            translate([text_extrusion_height,y*block_width-text_margin,block_height-text_margin])
-                lego_calibration_label_top_text(str("^",top_size_tweak));
+            translate([text_extrusion_height, y*block_width-text_margin, block_height-text_margin])
+                lego_calibration_label_top_text(str("^", top_size_tweak));
             
             translate([text_extrusion_height,text_margin,text_margin])
-                lego_calibration_label_bottom_text(str("v",bottom_size_tweak));
+                lego_calibration_label_bottom_text(str("v", bottom_size_tweak));
         }
     }
 }
 
 // Text for the side of calibration block prints
-module lego_calibration_label_top_text(txt="Text",x=2,y=4) {
+module lego_calibration_label_top_text(txt="Text", x=2, y=4) {
     rotate([90,0,-90]) 
         linear_extrude(height=text_extrusion_height) {
        text(text=txt, font=font, size=font_size, halign="left", valign="top");
@@ -173,14 +176,16 @@ module lego_calibration_label_bottom_text(txt="Text",x=2,y=4) {
      }
 }
 
-module screw_hole(x=1,y=1) {
+module screw_hole(x=1, y=1, fn=rounding) {
+    $fn = fn;
     translate([x*block_width - block_width/2,y*block_width - block_width/2, 0])
         cylinder(r=knob_radius,h=10000);
 }
 
 
 // The round bit on top of a lego block
-module knob(top_size_tweak=0) {
+module knob(top_size_tweak=0, fn=rounding) {
+    $fn = fn;
     cylinder(r=knob_radius+top_size_tweak,h=knob_height-knob_bevel);
     translate([0,0,knob_height-knob_bevel]) 
         intersection() {
@@ -190,24 +195,24 @@ module knob(top_size_tweak=0) {
 }
 
 // The rectangular part of the the lego plus the knob
-module block(z=1,top_size_tweak=0) {
+module block(z=1, top_size_tweak=0, fn=rounding) {
     cube([block_width,block_width,z*block_height]);
     translate([block_width/2,block_width/2,z*block_height])
-        knob(top_size_tweak);
+        knob(top_size_tweak, fn);
 }
 
 // Several blocks in a grid, one knob per block
-module block_set(x=2,y=2,z=2,top_size_tweak=0) {
+module block_set(x=2, y=2, z=2, top_size_tweak=0, fn=rounding) {
     for (i = [0:1:x-1]) {
         for (j = [0:1:y-1]) {
             translate([i*block_width,j*block_width,0])
-                block(z,top_size_tweak);
+                block(z, top_size_tweak, fn);
         }
     }
 }
 
 // That solid outer skin of the block set
-module block_shell(x=2,y=2,z=2) {
+module block_shell(x=2, y=2, z=2) {
     cube([block_shell,y*block_width,z*block_height]);
     translate([x*block_width-block_shell,0,0]) 
         cube([block_shell,y*block_width,z*block_height]);
@@ -221,24 +226,25 @@ module block_shell(x=2,y=2,z=2) {
 }
 
 // Bottom connector- negative space for one block
-module socket(bottom_size_tweak=0) {
+module socket(bottom_size_tweak=0, fn=rounding) {
     difference() {
         cube([block_width,block_width,socket_height]);
         union() {
             translate([0,0,0])
-                socket_ring(bottom_size_tweak);
+                socket_ring(bottom_size_tweak, fn);
             translate([block_width,0,0])
-                socket_ring(bottom_size_tweak);
+                socket_ring(bottom_size_tweak, fn);
             translate([0,block_width,0]) 
-                socket_ring(bottom_size_tweak);
+                socket_ring(bottom_size_tweak, fn);
             translate([block_width,block_width,0])
-                socket_ring(bottom_size_tweak);
+                socket_ring(bottom_size_tweak, fn);
         }
     }
 }
 
 // The circular bottom insert for attaching knobs
-module socket_ring(bottom_size_tweak=0) {
+module socket_ring(bottom_size_tweak=0, fn=rounding) {
+    $fn = fn;
     difference() {
         cylinder(r=ring_radius+bottom_size_tweak,h=socket_height);
         cylinder(r=ring_radius+bottom_size_tweak-ring_thickness,h=socket_height);
@@ -246,34 +252,35 @@ module socket_ring(bottom_size_tweak=0) {
 }
 
 // Bottom connector- negative space for multiple blocks
-module socket_set(x=2,y=2,bottom_size_tweak=0) {
+module socket_set(x=2, y=2, bottom_size_tweak=0, fn=rounding) {
     for (i = [0:1:x-1]) {
         for (j = [0:1:y-1]) {
             translate([i*block_width,j*block_width,0])
-                socket(bottom_size_tweak);
+                socket(bottom_size_tweak, fn);
         }
     }
 }
 
-module skin(x=2,y=2,z=2) {
+module skin(x=2, y=2, z=2) {
     difference() {
-        cube([block_width*x,block_width*y,z*block_height]);
-        translate([skin,skin,0])
-            cube([block_width*x - 2*skin,block_width*y - 2*skin,z*block_height]);
+        cube([block_width*x, block_width*y, z*block_height]);
+        translate([skin, skin, 0])
+            cube([block_width*x-2*skin, block_width*y-2*skin, z*block_height]);
     }
 }
 
 // A complete LEGO block, standard size, specify number of layers in X Y and Z
-module lego(x=2,y=2,z=2,bottom_size_tweak=0,top_size_tweak=0) {
+module lego(x=blocks_x, y=blocks_y, z=blocks_z, bottom_size_tweak=0,top_size_tweak=0, fn=rounding) {
+    $fn = fn;
     difference() {
         union() {
-            block_shell(x,y,z);
+            block_shell(x, y, z, fn);
             difference() {
-                block_set(x,y,z,top_size_tweak);
-                socket_set(x,y,bottom_size_tweak);
+                block_set(x, y, z, top_size_tweak, fn);
+                socket_set(x, y, bottom_size_tweak, fn);
             }
         }
-        skin(x,y,z);
+        skin(x, y, z);
     }
 }
 
