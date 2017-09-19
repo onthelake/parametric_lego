@@ -295,3 +295,6 @@ function lego_shell_width() = block_shell;
 
 // Function for access to clearance space from other modules
 function lego_skin_width() = skin;
+
+function lego_socket_height() = socket_height;
+
