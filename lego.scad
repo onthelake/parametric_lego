@@ -156,7 +156,7 @@ module lego_calibration_block(x=2, y=4, bottom_size_tweak=0, top_size_tweak=0, f
 }
 
 // Text for the side of calibration block prints
-module lego_calibration_label_top_text(txt="Text", x=2, y=4) {
+module lego_calibration_label_top_text(txt="Text") {
     rotate([90,0,-90]) 
         linear_extrude(height=text_extrusion_height) {
        text(text=txt, font=font, size=font_size, halign="left", valign="top");
@@ -164,7 +164,7 @@ module lego_calibration_label_top_text(txt="Text", x=2, y=4) {
 }
 
 // Text for the side of calibration block prints
-module lego_calibration_label_bottom_text(txt="Text",x=2,y=4) {
+module lego_calibration_label_bottom_text(txt="Text") {
     rotate([90,0,-90]) 
         linear_extrude(height=text_extrusion_height) {
        text(text=txt, font=font, size=font_size, halign="right");
@@ -281,7 +281,7 @@ module lego(x=blocks_x, y=blocks_y, z=blocks_z, bottom_size_tweak=bottom_connect
 function lego_width(x=1) = x*block_width;
 
 // Function for access to vertical size from other modules
-function lego_height(z=1) = z*block_height + knob_height;
+function lego_height(z=1) = z*block_height;
 
 // Function for access to outside shell size from other modules
 function lego_shell_width() = block_shell;
