@@ -48,10 +48,10 @@ enclosed_width = 68;
 enclosed_height = 28;
 
 // Top connector size tweak => + = more tight fit, 0 for ABS, 0.04 for PLA, 0.08 for NGEN
-top_connector_tweak = 0;
+top_connector_tweak = 0.08;
 
 // Bottom connector size tweak => - = more loose fit, 0 for ABS, -0.04 for PLA, -0.08 NGEN
-bottom_connector_tweak = 0;
+bottom_connector_tweak = -0.08;
 
 // Number of facets to form a circle (big numbers are more round which affects fit, but may take a long time to render)
 rounding=64;
