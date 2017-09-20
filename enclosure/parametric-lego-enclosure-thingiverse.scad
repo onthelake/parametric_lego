@@ -4,7 +4,9 @@ Parametric LEGO End Cap Enclosure Generator
 Create 2 symmetric end pieces which can support a solid object with LEGO-compatible attachment points on top and bottom. By printing only the end pieces instead of a complele enclosure, the print is minimized
 
 Published at
-    http://www.thingiverse.com/thing:2303714
+    https://www.thingiverse.com/thing:2544197
+Based on
+    https://www.thingiverse.com/thing:2303714
 Maintained at
     https://github.com/paulirotta/parametric_lego
 

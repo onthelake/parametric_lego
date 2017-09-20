@@ -29,14 +29,14 @@ blocks_y = 4;
 // How many Lego units high the brick is
 blocks_z = 1;
 
-// Top connector size tweak => 0 for ABS, 0.04 for tighter, -0.04 for PLA/NGEN/less tight
-top_connector_tweak = -0.00;
+// Top connector size tweak => + = more tight fit, 0 for ABS, 0.04 for PLA, 0.08 for NGEN
+top_connector_tweak = 0;
 
-// Bottom connector size tweak => 0 for ABS, -0.04 for tighter, 0.04 for bigger/PLA/NGEN/less tight
-bottom_connector_tweak = 0.00;
+// Bottom connector size tweak => - = more loose fit, 0 for ABS, -0.04 for PLA, -0.08 NGEN
+bottom_connector_tweak = 0;
 
 // Number of facets to form a circle (big numbers are more round which affects fit, but may take a long time to render)
-rounding=16;
+rounding=64;
 
 // Clearance space on the outer surface of bricks
 skin = 0.1;
@@ -89,59 +89,54 @@ increment = 0.02;
 /////////////////////////////////////
 
 // Test display, uncomment only one of the following lines at a time
-//lego(x=blocks_x, y=blocks_y, z=blocks_z, bottom_size_tweak=bottom_connector_tweak, top_size_tweak=top_connector_tweak, fn=fn); // A single block
+lego(); // A single block
 
-lego_calibration_set(fn=8); // A set of blocks for testing which tweak parameters to use on your printer and plastic
+//lego_calibration_set(); // A set of blocks for testing which tweak parameters to use on your printer and plastic
 
-//lego_panel(x=blocks_x, y=blocks_y, top_size_tweak=top_connector_tweak, fn=fn);
+//lego_panel();
 
 /////////////////////////////////////
 
-module lego_panel(x=3,y=3, top_size_tweak=0, fn=rounding) {
-    $fn = fn;
+module lego_panel(x=blocks_x, y=blocks_y, top_size_tweak=top_connector_tweak, cut_line=cut_line_height, fn=rounding) {
     difference() {
         intersection() {
-            lego(x, y, 1, bottom_connector_tweak, top_connector_tweak, fn);
-            translate([0,0,cut_line_height])
-                cube([10000,10000,10000]);
+            lego(x, y, 1, 0, top_size_tweak, fn);
+            translate([0, 0, cut_line])
+                cube([10000, 10000, 10000]);
         }
         union() {
-            screw_hole(1, 1, fn);
-            screw_hole(1, y, fn);
-            screw_hole(x, 1, fn);
-            screw_hole(x, y, fn);
+            screw_hole(1, 1, top_size_tweak, fn);
+            screw_hole(1, y, top_size_tweak, fn);
+            screw_hole(x, 1, top_size_tweak, fn);
+            screw_hole(x, y, top_size_tweak, fn);
         }
     }
 }
 
 // A set of blocks with different tweak parameters written on the side
-module lego_calibration_set(x=2, y=4, fn=rounding) {
-    $fn = fn;
+module lego_calibration_set(x=blocks_x, y=blocks_y, fn=rounding) {
     lego_calibration_block(x, y, 0, 0, fn);
     
-    translate([block_width*3, 0,0])
-        lego_calibration_block(x,y,increment,-increment, fn);
-    
-    translate([block_width*6, 0,0])
-        lego_calibration_block(x,y,2*increment,-2*increment, fn);
-    
-    translate([block_width*9, 0,0])
-        lego_calibration_block(x,y,3*increment,-3*increment, fn);
-    
-    translate([block_width*12, 0,0])
-        lego_calibration_block(x,y,4*increment,-4*increment, fn);
-    
-    translate([block_width*3, block_width*5, 0])
+    translate([lego_width(3), 0, 0])
         lego_calibration_block(x,y,-increment,increment, fn);
     
-    translate([block_width*6, block_width*5, 0])
+    translate([lego_width(6), 0, 0])
         lego_calibration_block(x,y,-2*increment,2*increment, fn);
     
-    translate([block_width*9, block_width*5, 0])
+    translate([lego_width(9), 0, 0])
         lego_calibration_block(x,y,-3*increment,3*increment, fn);
     
-    translate([block_width*12, block_width*5, 0])
+    translate([lego_width(12), 0, 0])
         lego_calibration_block(x,y,-4*increment,4*increment, fn);
+    
+    translate([lego_width(15), 0, 0])
+        lego_calibration_block(x,y,-5*increment,5*increment, fn);
+    
+    translate([lego_width(3), lego_width(5), 0])
+        lego_calibration_block(x,y,increment,-increment, fn);
+    
+    translate([lego_width(6), lego_width(5), 0])
+        lego_calibration_block(x,y,2*increment,-2*increment, fn);
 }
 
 // A block with the tweak parameters written on the side
@@ -176,10 +171,10 @@ module lego_calibration_label_bottom_text(txt="Text",x=2,y=4) {
      }
 }
 
-module screw_hole(x=1, y=1, fn=rounding) {
+module screw_hole(x=1, y=1, top_size_tweak=top_connector_tweak, fn=rounding) {
     $fn = fn;
     translate([x*block_width - block_width/2,y*block_width - block_width/2, 0])
-        cylinder(r=knob_radius,h=10000);
+        cylinder(r=knob_radius+top_size_tweak,h=10000);
 }
 
 
@@ -228,31 +223,30 @@ module block_shell(x=2, y=2, z=2) {
 // Bottom connector- negative space for one block
 module socket(bottom_size_tweak=0, fn=rounding) {
     difference() {
-        cube([block_width,block_width,socket_height]);
+        cube([block_width, block_width, socket_height]);
         union() {
-            translate([0,0,0])
+            socket_ring(bottom_size_tweak, fn);
+            translate([block_width, 0, 0])
                 socket_ring(bottom_size_tweak, fn);
-            translate([block_width,0,0])
+            translate([0, block_width, 0]) 
                 socket_ring(bottom_size_tweak, fn);
-            translate([0,block_width,0]) 
-                socket_ring(bottom_size_tweak, fn);
-            translate([block_width,block_width,0])
+            translate([block_width, block_width, 0])
                 socket_ring(bottom_size_tweak, fn);
         }
     }
 }
 
 // The circular bottom insert for attaching knobs
-module socket_ring(bottom_size_tweak=0, fn=rounding) {
+module socket_ring(bottom_size_tweak=bottom_connector_tweak, fn=rounding) {
     $fn = fn;
     difference() {
-        cylinder(r=ring_radius+bottom_size_tweak,h=socket_height);
-        cylinder(r=ring_radius+bottom_size_tweak-ring_thickness,h=socket_height);
+        cylinder(r=ring_radius+bottom_size_tweak, h=socket_height);
+        cylinder(r=ring_radius+bottom_size_tweak-ring_thickness, h=socket_height);
     }
 }
 
 // Bottom connector- negative space for multiple blocks
-module socket_set(x=2, y=2, bottom_size_tweak=0, fn=rounding) {
+module socket_set(x=blocks_x, y=blocks_y, bottom_size_tweak=bottom_connector_tweak, fn=rounding) {
     for (i = [0:1:x-1]) {
         for (j = [0:1:y-1]) {
             translate([i*block_width,j*block_width,0])
@@ -261,7 +255,7 @@ module socket_set(x=2, y=2, bottom_size_tweak=0, fn=rounding) {
     }
 }
 
-module skin(x=2, y=2, z=2) {
+module skin(x=blocks_x, y=blocks_y, z=blocks_z) {
     difference() {
         cube([block_width*x, block_width*y, z*block_height]);
         translate([skin, skin, 0])
@@ -270,8 +264,7 @@ module skin(x=2, y=2, z=2) {
 }
 
 // A complete LEGO block, standard size, specify number of layers in X Y and Z
-module lego(x=blocks_x, y=blocks_y, z=blocks_z, bottom_size_tweak=0,top_size_tweak=0, fn=rounding) {
-    $fn = fn;
+module lego(x=blocks_x, y=blocks_y, z=blocks_z, bottom_size_tweak=bottom_connector_tweak, top_size_tweak=top_connector_tweak, fn=rounding) {
     difference() {
         union() {
             block_shell(x, y, z, fn);
