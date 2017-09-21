@@ -82,7 +82,7 @@ top_connector_tweak = 0;
 bottom_connector_tweak = 0;
 
 // Number of facets to form a circle (big numbers are more round which affects fit, but may take a long time to render)
-rounding=64;
+rounding=32;
 
 /////////////////////////////////////
 
