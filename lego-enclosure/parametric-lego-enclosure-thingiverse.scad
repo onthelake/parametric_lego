@@ -77,7 +77,7 @@ module lego_enclosure(l=enclosed_length, w=enclosed_width, h=enclosed_height, x=
     // Inner box dimensions
     dl=(lego_width(x)-skinned_l)/2;
     dw=(lego_width(y)-skinned_w)/2;
-    dh=(lego_height(z)-skinned_h+lego_socket_height()/2)/2;
+    dh=(lego_height(z)-skinned_h)/2;
     
     difference() {
         lego(x_cap, y, z, bottom_size_tweak, top_size_tweak, fn);

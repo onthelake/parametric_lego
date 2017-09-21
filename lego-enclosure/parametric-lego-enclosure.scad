@@ -48,10 +48,10 @@ enclosed_width = 68;
 enclosed_height = 28;
 
 // Top connector size tweak => + = more tight fit, 0 for ABS, 0.04 for PLA, 0.08 for NGEN
-top_connector_tweak = 0.08;
+top_connector_tweak = 0.04;
 
 // Bottom connector size tweak => - = more loose fit, 0 for ABS, -0.04 for PLA, -0.08 NGEN
-bottom_connector_tweak = -0.08;
+bottom_connector_tweak = -0.04;
 
 // Number of facets to form a circle (big numbers are more round which affects fit, but may take a long time to render)
 rounding=64;
@@ -79,7 +79,7 @@ module lego_enclosure(l=enclosed_length, w=enclosed_width, h=enclosed_height, x=
     // Inner box dimensions
     dl=(lego_width(x)-skinned_l)/2;
     dw=(lego_width(y)-skinned_w)/2;
-    dh=(lego_height(z)-skinned_h+lego_socket_height()/2)/2;
+    dh=(lego_height(z)-skinned_h)/2;
     
     difference() {
         lego(x_cap, y, z, bottom_size_tweak, top_size_tweak, fn);
