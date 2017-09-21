@@ -16,7 +16,10 @@ Email: paulirotta@gmail.com
 Blog: https://medium.com/@paulhoughton
 
 Creative Commons Attribution ShareAlike NonCommercial License
-https://creativecommons.org/licenses/by-sa/4.0/legalcode
+    https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+Work sponsored by
+    http://futurice.com
 
 Import this into other design files:
     use <anker-usb-lego-enclosure.scad>

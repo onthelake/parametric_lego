@@ -5,6 +5,10 @@ Published at
     http://www.thingiverse.com/thing:2303714
 Maintained at
     https://github.com/paulirotta/parametric_lego
+See also the related files
+    LEGO Sign Generator - https://www.thingiverse.com/thing:2546028
+    LEGO Enclosure Generator - https://www.thingiverse.com/thing:2544197
+
 
 By Paul Houghton
 Twitter: @mobile_rat
@@ -12,7 +16,10 @@ Email: paulirotta@gmail.com
 Blog: https://medium.com/@paulhoughton
 
 Creative Commons Attribution ShareAlike NonCommercial License
-https://creativecommons.org/licenses/by-sa/4.0/legalcode
+    https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+Work sponsored by
+    http://futurice.com
 
 Import this into other design files:
     use <lego.scad>
