@@ -54,7 +54,7 @@ text_extrusion_height = 0.7;
 extrude = false;
 
 // Place the text on both sides
-copy_to_back = true;
+copy_to_back = false;
 
 // How many LEGO units wide the enclosure is
 blocks_x = 8;
