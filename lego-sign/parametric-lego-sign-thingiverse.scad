@@ -52,7 +52,7 @@ font_size_line_1 = 5.8;
 font_size_line_2 = 5;
 
 // How deeply into the LEGO block to etch/extrude the text
-text_extrusion_height = 0.7;
+text_extrusion_height = 0.5;
 
 // Text is pushing out from the LEGO block. Set false to etch the text into the block
 extrude = "false";
