@@ -37,10 +37,10 @@ blocks_y = 4;
 blocks_z = 1;
 
 // Top connector size tweak => + = more tight fit, -0.04 for PLA, 0 for ABS, 0.08 for NGEN
-top_connector_tweak = 0;
+top_connector_tweak = -0.04;
 
 // Bottom connector size tweak => - = more tight fit, 0.02 for PLA, 0 for ABS, -0.08 NGEN
-bottom_connector_tweak = 0;
+bottom_connector_tweak = 0.02;
 
 // Number of facets to form a circle (big numbers are more round which affects fit, but may take a long time to render)
 rounding=64;
