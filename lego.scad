@@ -82,16 +82,16 @@ cut_line_height=7.6;
 font = "Arial";
 
 // Text size on calibration blocks
-font_size = 4;
+font_size = 3.8;
 
 // Depth of text labels on calibration blocks
-text_extrusion_height = 0.7;
+text_extrusion_height = 0.5;
 
 // Inset from block edge for text (vertical and horizontal)
 text_margin = 1;
 
 // Size between calibration block tweak test steps
-increment = 0.02;
+increment = 0.01;
 
 /////////////////////////////////////
 
@@ -122,58 +122,50 @@ module lego_panel(x=blocks_x, y=blocks_y, top_size_tweak=top_connector_tweak, cu
 
 // A set of blocks with different tweak parameters written on the side
 module lego_calibration_set(x=blocks_x, y=blocks_y, fn=rounding) {
-    lego_calibration_block(x, y, 0, 0, fn);
+    for (i = [0:5]) {
+        translate([i*lego_width(x+0.5), 0, 0])
+            lego_calibration_block(x,y,-i*increment,i*increment, fn);
+    }
     
-    translate([lego_width(3), 0, 0])
-        lego_calibration_block(x,y,-increment,increment, fn);
+    for (i = [6:10]) {
+        translate([(i-5)*lego_width(x+0.5), -lego_width(y+0.5), 0])
+            lego_calibration_block(x,y,-i*increment,i*increment, fn);
+    }
     
-    translate([lego_width(6), 0, 0])
-        lego_calibration_block(x,y,-2*increment,2*increment, fn);
-    
-    translate([lego_width(9), 0, 0])
-        lego_calibration_block(x,y,-3*increment,3*increment, fn);
-    
-    translate([lego_width(12), 0, 0])
-        lego_calibration_block(x,y,-4*increment,4*increment, fn);
-    
-    translate([lego_width(15), 0, 0])
-        lego_calibration_block(x,y,-5*increment,5*increment, fn);
-    
-    translate([lego_width(3), lego_width(5), 0])
-        lego_calibration_block(x,y,increment,-increment, fn);
-    
-    translate([lego_width(6), lego_width(5), 0])
-        lego_calibration_block(x,y,2*increment,-2*increment, fn);
+    for (i = [1:5]) {
+        translate([i*lego_width(x + 0.5), lego_width(y+0.5), 0])
+            lego_calibration_block(x,y,i*increment,-i*increment, fn);
+    }
 }
 
 // A block with the tweak parameters written on the side
-module lego_calibration_block(x=2, y=4, bottom_size_tweak=0, top_size_tweak=0, fn=rounding) {
+module lego_calibration_block(x=blocks_x, y=blocks_y, bottom_size_tweak=0, top_size_tweak=0, fn=rounding) {
     $fn = fn;
     difference() {
         lego(x, y, 1, bottom_size_tweak, top_size_tweak, fn);
 
         union() {
-            translate([text_extrusion_height, y*block_width-text_margin, block_height-text_margin])
-                lego_calibration_label_top_text(str("^", top_size_tweak));
+            translate([text_extrusion_height, lego_skin_width()+y*block_width-text_margin, lego_skin_width()+block_height-text_margin])
+                rotate([90,0,-90]) 
+                    lego_calibration_top_text(str("^", top_size_tweak));
             
-            translate([text_extrusion_height,text_margin,text_margin])
-                lego_calibration_label_bottom_text(str("v", bottom_size_tweak));
+            translate([lego_skin_width()+text_margin, lego_width(y)-text_extrusion_height, lego_skin_width()+text_margin])
+                rotate([90, 0, 180])
+                    lego_calibration_bottom_text(str(bottom_size_tweak, "v"));
         }
     }
 }
 
-// Text for the side of calibration block prints
-module lego_calibration_label_top_text(txt="Text") {
-    rotate([90,0,-90]) 
-        linear_extrude(height=text_extrusion_height) {
-       text(text=txt, font=font, size=font_size, halign="left", valign="top");
+// Text for the left side of calibration block prints
+module lego_calibration_top_text(txt="Text") {
+    linear_extrude(height=text_extrusion_height) {
+    text(text=txt, font=font, size=font_size, halign="left", valign="top");
      }
 }
 
-// Text for the side of calibration block prints
-module lego_calibration_label_bottom_text(txt="Text") {
-    rotate([90,0,-90]) 
-        linear_extrude(height=text_extrusion_height) {
+// Text for the back side of calibration block prints
+module lego_calibration_bottom_text(txt="Text") {
+    linear_extrude(height=text_extrusion_height) {
        text(text=txt, font=font, size=font_size, halign="right");
      }
 }
