@@ -37,10 +37,10 @@ blocks_y = 4;
 blocks_z = 1;
 
 // Top connector size tweak => + = more tight fit, -0.04 for PLA, 0 for ABS, 0.08 for NGEN
-top_connector_tweak = -0.04;
+top_connector_tweak = 0;
 
 // Bottom connector size tweak => - = more tight fit, 0.02 for PLA, 0 for ABS, -0.08 NGEN
-bottom_connector_tweak = 0.02;
+bottom_connector_tweak = 0;
 
 // Number of facets to form a circle (big numbers are more round which affects fit, but may take a long time to render)
 rounding=64;
@@ -51,11 +51,11 @@ skin = 0.1;
 // Size of the connectors
 knob_radius=2.4;
 
-// Total height of the connectors (1.8 is Lego standard, longer gives a stronger hold which helps since 3D prints are less precise)
+// Height of the connectors including any bevel (1.8 is Lego standard, longer gives a stronger hold which helps since 3D prints are less precise)
 knob_height=2.4;
 
-// Height of the easy connect slope near connector top (0 to disable, helps if you adjust a tight fit)
-knob_bevel=0.2;
+// Height of the easy connect slope near connector top (0 to disable is standard a slightly faster to generate the model, a bigger value such as 0.3 may help if you adjust a tight fit but most printers' slicers will simplify away most usable bevels)
+knob_bevel=0;
 
 // Size of the small cavity inside the connectors
 knob_cutout_radius=1.25;
@@ -64,10 +64,10 @@ knob_cutout_radius=1.25;
 knob_top_thickness=1.25;
 
 // Height of the cutout beneatch each knob
-knob_cutout_height=3;
+knob_cutout_height=2.4;
 
-// Size of the hole to keep the knob as an outside surface 
-knob_cutout_airhole_radius=0.001;
+// Size of the hole to keep the cutout as part of the outside surface for slicer-friendliness. Enlarge this if you need to drain resin from the cutout.
+knob_cutout_airhole_radius=0.01;
 
 // Depth which connectors may press into part bottom
 socket_height=6;
@@ -103,7 +103,7 @@ text_extrusion_height = 0.5;
 text_margin = 1;
 
 // Size between calibration block tweak test steps
-increment = 0.01;
+calibration_block_increment = 0.01;
 
 /////////////////////////////////////
 // Test display, uncomment only one of the following lines at a time
@@ -153,35 +153,50 @@ module lego(x=blocks_x, y=blocks_y, z=blocks_z, bottom_size_tweak=bottom_connect
 }
 
 
+// Several blocks in a grid, one knob per block
+module block_set(x=blocks_x, y=blocks_y, z=blocks_z, top_size_tweak=top_connector_tweak, fn=rounding) {
+    for (i = [0:1:x-1]) {
+        for (j = [0:1:y-1]) {
+            translate([lego_width(i), lego_width(j), 0])
+                block(z=z, top_size_tweak=top_size_tweak, knob_height=knob_height,knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=fn);
+        }
+    }
+}
+
+
 // The rectangular part of the the lego plus the knob
 module block(z=bocks_z, top_size_tweak=top_connector_tweak, knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=rounding) {
     difference() {
         union() {
             cube([lego_width(1), lego_width(1), lego_height(z)]);
             translate([lego_width(1)/2, lego_width(1)/2, lego_height(z)])
-        knob(top_size_tweak, fn);
+                knob(top_size_tweak=top_size_tweak, knob_bevel=knob_bevel, fn=fn);
         }
-        knob_cutout(knob_height, knob_cutout_height, knob_cutout_radius, knob_cutout_airhole_radius, fn);
+        translate([lego_width(1)/2, lego_width(1)/2, lego_height(z)])
+            knob_cutout(knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=rounding);
     }
 }
 
 
 // The round bit on top of a lego block
-module knob(top_size_tweak=top_connector_tweak, fn=rounding) {
+module knob(top_size_tweak=top_connector_tweak, knob_bevel=knob_bevel, fn=rounding) {
     $fn = fn;
-    cylinder(r=knob_radius+top_size_tweak,h=knob_height-knob_bevel);
-    translate([0,0,knob_height-knob_bevel]) 
-        intersection() {
-            cylinder(r=knob_radius+top_size_tweak,h=knob_bevel);
-            cylinder(r1=knob_radius+top_size_tweak,r2=0,h=knob_radius+top_size_tweak);
-        }
+    cylinder(r=knob_radius+top_size_tweak, h=knob_height-knob_bevel);
+    if (knob_bevel > 0) {
+        // This path is a bit slower, but does the same thing as the bath below for the most common case of knob_bevel==0
+        translate([0, 0, knob_height-knob_bevel])
+            intersection() {
+                cylinder(r=knob_radius+top_size_tweak,h=knob_bevel);
+                cylinder(r1=knob_radius+top_size_tweak,r2=0,h=knob_radius+top_size_tweak);
+            }
+    }
 }
 
 
 // The empty bit inside a knob on top of a lego connector
 module knob_cutout(knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=rounding) {
     $fn = fn;
-    cylinder(r=knob_cutout_airhole_radius, h=knob_height);
+    cylinder(r=knob_cutout_airhole_radius, h=knob_height+0.1);
     translate([0, 0, knob_height-knob_top_thickness-knob_cutout_height])
         cylinder(r=knob_cutout_radius, h=knob_cutout_height);
 }
@@ -248,17 +263,17 @@ module skin(x=blocks_x, y=blocks_y, z=blocks_z) {
 module lego_calibration_set(x=blocks_x, y=blocks_y, fn=rounding) {
     for (i = [0:5]) {
         translate([i*lego_width(x+0.5), 0, 0])
-            lego_calibration_block(x,y,-i*increment,i*increment, fn);
+            lego_calibration_block(x, y, -i*calibration_block_increment, i*calibration_block_increment, fn);
     }
     
     for (i = [6:10]) {
         translate([(i-5)*lego_width(x+0.5), -lego_width(y+0.5), 0])
-            lego_calibration_block(x,y,-i*increment,i*increment, fn);
+            lego_calibration_block(x, y, -i*calibration_block_increment,i*calibration_block_increment, fn);
     }
     
     for (i = [1:5]) {
         translate([i*lego_width(x + 0.5), lego_width(y+0.5), 0])
-            lego_calibration_block(x,y,i*increment,-i*increment, fn);
+            lego_calibration_block(x, y, i*calibration_block_increment,-i*calibration_block_increment, fn);
     }
 }
 
@@ -324,15 +339,4 @@ module screw_hole(x=1, y=1, top_size_tweak=top_connector_tweak, fn=rounding) {
     $fn = fn;
     translate([lego_width(x)-lego_width(1)/2, lego_width(y)-lego_width(1)/2, 0])
         cylinder(r=knob_radius+top_size_tweak, h=1000);
-}
-
-
-// Several blocks in a grid, one knob per block
-module block_set(x=blocks_x, y=blocks_y, z=blocks_z, top_size_tweak=top_connector_tweak, fn=rounding) {
-    for (i = [0:1:x-1]) {
-        for (j = [0:1:y-1]) {
-            translate([lego_width(i), lego_width(j), 0])
-                block(z, top_size_tweak, fn);
-        }
-    }
 }
