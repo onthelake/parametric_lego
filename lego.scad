@@ -31,7 +31,7 @@ Import this into other design files:
 blocks_x = 2;
 
 // How many Lego units long the brick is
-blocks_y = 4;
+blocks_y = 2;
 
 // How many Lego units high the brick is
 blocks_z = 1;
