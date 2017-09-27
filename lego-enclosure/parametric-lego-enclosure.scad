@@ -50,34 +50,34 @@ enclosed_width = 68;
 // Height of the object to be enclosed
 enclosed_height = 28;
 
-// Top connector size tweak => + = more tight fit, -0.04 for PLA, 0 for ABS, 0.08 for NGEN
-top_connector_tweak = 0;
+// Top connector size tweak => + = more tight fit, -0.04 for PLA, 0 for ABS, 0.07 for NGEN
+top_tweak = 0;
 
-// Bottom connector size tweak => - = more tight fit, 0.02 for PLA, 0 for ABS, -0.08 NGEN
-bottom_connector_tweak = 0;
+// Bottom connector size tweak => + = more tight fit, 0.02 for PLA, 0 for ABS, -0.01 NGEN
+bottom_tweak = 0;
 
 // Number of facets to form a circle (big numbers are more round which affects fit, but may take a long time to render)
-rounding=64;
+fn = 64;
 
 // The size of the step in each corner which supports the enclosed part while providing ventilation holes to remove heat
-support_shoulder = 3;
+shoulder = 3;
 
 /////////////////////////////////////
 
 // Test display
 rotate([0,-90,0])
-    lego_enclosure();
+    lego_enclosure(top_tweak=top_tweak, bottom_tweak=bottom_tweak);
 
 ///////////////////////////////////
 
 
 // A Lego brick with a hole inside to contain something of the specified dimensions
-module lego_enclosure(l=enclosed_length, w=enclosed_width, h=enclosed_height, x=blocks_x, x_cap=blocks_x_end_cap, y=blocks_y, z=blocks_z, shoulder=support_shoulder, bottom_size_tweak=bottom_connector_tweak, top_size_tweak=bottom_connector_tweak, fn=rounding) {
+module lego_enclosure(l=enclosed_length, w=enclosed_width, h=enclosed_height, x=blocks_x, x_cap=blocks_x_end_cap, y=blocks_y, z=blocks_z, shoulder=shoulder, top_tweak=top_tweak, bottom_tweak=bottom_tweak, fn=fn) {
     
     // Add some margin to give space to fit the part
-    skinned_l = l + 2*lego_skin_width();
-    skinned_w = w + 2*lego_skin_width();
-    skinned_h = h + 2*lego_skin_width();
+    skinned_l = l + lego_skin_width(2);
+    skinned_w = w + lego_skin_width(2);
+    skinned_h = h + lego_skin_width(2);
     
     // Inner box dimensions
     dl=(lego_width(x)-skinned_l)/2;
@@ -85,14 +85,14 @@ module lego_enclosure(l=enclosed_length, w=enclosed_width, h=enclosed_height, x=
     dh=(lego_height(z)-skinned_h)/2;
     
     difference() {
-        lego(x_cap, y, z, bottom_size_tweak, top_size_tweak, fn);
+        lego(x=x_cap, y=y, z=z, top_tweak=top_tweak, bottom_tweak=bottom_tweak, fn=fn);
         translate([dl, dw, dh])
             enclosure_negative_space(skinned_l, skinned_w, skinned_h, shoulder);
     }
 }
 
 // Where to remove material to privide access for attachments and air ventilation
-module enclosure_negative_space(l=enclosed_length, w=enclosed_width, h=enclosed_height, shoulder=support_shoulder) {
+module enclosure_negative_space(l=enclosed_length, w=enclosed_width, h=enclosed_height, shoulder=shoulder) {
     ls = l - 2*shoulder;
     ws = w - 2*shoulder;
     hs = h - 2*shoulder;
@@ -102,21 +102,27 @@ module enclosure_negative_space(l=enclosed_length, w=enclosed_width, h=enclosed_
     
     // Primary enclosure hole
     cube([l, w, h]);
+    
     // Right air hole
     translate([l, shoulder, shoulder])
         cube([ls2, ws, hs]);
+    
     // Left air hole
     translate([-ls2, shoulder, shoulder])
         cube([ls2, ws, hs]);
+    
     // Back air hole
     translate([shoulder, w, shoulder])
         cube([ls, ws2, hs]);
+        
     // Front air hole
     translate([shoulder, -ws2, shoulder])
         cube([ls, ws2, hs]);
+        
     // Top air hole
     translate([shoulder, shoulder, h])
         cube([ls, ws, hs2]);
+        
     // Bottom air hole
     translate([shoulder, shoulder, -hs2])
         cube([ls, ws, hs2]);
