@@ -25,7 +25,7 @@ Import this into other design files:
     use <parametric-lego-sign.scad>
 */
 
-use <../lego.scad>
+use <../parametric-lego.scad>
 
 /* [LEGO Options plus Plastic and Printer Variance Adjustments] */
 
