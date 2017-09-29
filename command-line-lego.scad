@@ -35,10 +35,10 @@ Pass in arguments from the command line such as:
 use <lego.scad>
 
 if (mode=="calibration") {
-    lego_calibration_set(); // A set of blocks for testing which tweak parameters to use on your printer and plastic
+    lego_calibration_set(x=x, y=y, fn=fn); // A set of blocks for testing which tweak parameters to use on your printer and plastic
 } else if (mode=="panel") {
-    lego_panel(); // A thin panel of knobs with a flat back and mounting screw holes in the corners, suitable for organizing projects
+    lego_panel(x=x, y=y, top_tweak=top_tweak, panel_thickness=panel_thickness, bolt_holes=bolt_holes, fn=fn); // A thin panel of knobs with a flat back and mounting screw holes in the corners, suitable for organizing projects
 } else {
     // A single block
-    lego(x=x, y=y, z=z, top_tweak=top_tweak, bottom_tweak=bottom_tweak, fn=fn, airhole_fn=airhole_fn);
+    lego(x=x, y=y, z=z, top_tweak=top_tweak, bottom_tweak=bottom_tweak, knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, bolt_holes=bolt_holes, fn=fn, airhole_fn=airhole_fn);
 }

@@ -18,7 +18,7 @@ Blog: https://medium.com/@paulhoughton
 Creative Commons Attribution ShareAlike NonCommercial License
     https://creativecommons.org/licenses/by-sa/4.0/legalcode
 
-Work sponsored by
+Design work kindly sponsored by
     http://futurice.com
 
 Import this into other design files:
@@ -31,13 +31,13 @@ Import this into other design files:
 mode="brick";
 
 // How many Lego units wide the brick is
-x = 3;
+x = 1;
 
 // How many Lego units long the brick is
-y = 3;
+y = 1;
 
 // How many Lego units high the brick is
-z = 2;
+z = 1;
 
 
 // Top connector size tweak => + = more tight fit, -0.04 for PLA, 0 for ABS, 0.07 for NGEN
@@ -73,7 +73,7 @@ knob_cutout_height=4.55;
 // Size of the top hole in each knob to keep the cutout as part of the outside surface for slicer-friendliness. Use a larger number if you need to drain resin from the cutout. If z height of the block is 1, no airhole is added to the model since the cutout is open from below.
 knob_cutout_airhole_radius=0.01;
 
-// Number of side to simulate a circle in the airhold (smaller numbers render faster, usually sufficient for a non-visible feature)
+// Number of side to simulate a circle in the air hole and (smaller numbers render faster and are usually sufficient)
 airhole_fn=16;
 
 // Depth which connectors may press into part bottom
@@ -98,7 +98,7 @@ block_shell=1.3; // thickness
 panel_thickness=3.2;
 
 // Place holes in the corners of the panel for mountings screws (set "true" or "false")
-bolt_holes="true";
+bolt_holes="false";
 
 // Font for calibration block text labels
 font = "Arial";
