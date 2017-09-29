@@ -28,7 +28,7 @@ Import this into other design files:
 /* [LEGO Options plus Plastic and Printer Variance Adjustments] */
 
 // What type of object to generate: "brick", "calibration", "panel"
-mode="panel";
+mode="brick";
 
 // How many Lego units wide the brick is
 x = 2;
@@ -74,7 +74,7 @@ knob_cutout_height=4.55;
 knob_cutout_airhole_radius=0.01;
 
 // Number of side to simulate a circle in the airhold (smaller numbers render faster, usually sufficient for a non-visible feature)
-airhole_fn=6;
+airhole_fn=16;
 
 // Depth which connectors may press into part bottom
 socket_height=6;
@@ -157,36 +157,36 @@ function is_true(t) = t != "false";
 /////////////////////////////////////
 
 // A complete LEGO block, standard size, specify number of layers in X Y and Z
-module lego(x=x, y=y, z=z, top_tweak=top_tweak, bottom_tweak=bottom_tweak, fn=fn, airhole_fn=airhole_fn) {
+module lego(x=x, y=y, z=z, top_tweak=top_tweak, bottom_tweak=bottom_tweak, knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=fn, airhole_fn=airhole_fn) {
     difference() {
         union() {
             block_shell(x=x, y=y, z=z, fn=fn);
             difference() {
-                block_set(x=x, y=y, z=z, top_tweak=top_tweak, fn=fn, airhole_fn=airhole_fn);
+                block_set(x=x, y=y, z=z, top_tweak=top_tweak, fn=fn);
                 socket_set(x=x, y=y, bottom_tweak=bottom_tweak, fn=fn);
             }
         }
         union() {
             skin(x=x, y=y, z=z);
-//            knob_cutout_set(x=x, y=y, z=z, knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=fn, airhole_fn=airhole_fn);
+            knob_cutout_set(x=x, y=y, z=z, knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=fn, airhole_fn=airhole_fn);
         }
     }
 }
 
 
 // Several blocks in a grid, one knob per block
-module block_set(x=x, y=y, z=z, top_tweak=top_tweak, fn=fn, airhole_fn=airhole_fn) {
+module block_set(x=x, y=y, z=z, top_tweak=top_tweak, fn=fn) {
     for (i = [0:1:x-1]) {
         for (j = [0:1:y-1]) {
             translate([lego_width(i), lego_width(j), 0])
-                block(z=z, top_tweak=top_tweak, knob_height=knob_height,knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=fn, airhole_fn=airhole_fn);
+                block(z=z, top_tweak=top_tweak, knob_height=knob_height, fn=fn);
         }
     }
 }
 
 
 // The rectangular part of the the lego plus the knob
-module block(z=bocks_z, top_tweak=top_tweak, knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=fn, airhole_fn=airhole_fn) {
+module block(z=bocks_z, top_tweak=top_tweak, knob_height=knob_height, fn=fn) {
     cube([lego_width(), lego_width(), lego_height(z)]);
     translate([lego_width(0.5), lego_width(0.5), lego_height(z)])
         knob(top_tweak=top_tweak, knob_bevel=knob_bevel, fn=fn);
@@ -206,6 +206,7 @@ module knob(top_tweak=top_tweak, knob_bevel=knob_bevel, fn=fn) {
     }
 }
 
+// An array of empty cylinders to fit inside a knob_set()
 module knob_cutout_set(x=x, y=y, z=z, knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=fn, airhole_fn=airhole_fn) {
     for (i = [0:1:x-1]) {
         for (j = [0:1:y-1]) {
@@ -219,7 +220,7 @@ module knob_cutout_set(x=x, y=y, z=z, knob_height=knob_height, knob_cutout_heigh
 // The empty cylinder inside a knob
 module knob_cutout(knob_height=knob_height, knob_cutout_height=knob_cutout_height, knob_cutout_radius=knob_cutout_radius, knob_cutout_airhole_radius=knob_cutout_airhole_radius, fn=fn, airhole_fn=airhole_fn) {
     translate([0, 0, knob_height-knob_top_thickness-knob_cutout_height])
-        cylinder(r=knob_cutout_radius, h=knob_cutout_height, $fn=fn);
+        cylinder(r=knob_cutout_radius, h=knob_cutout_height, $fn=airhole_fn);
     if (mode!="panel") {
         cylinder(r=knob_cutout_airhole_radius, h=knob_height+0.1, $fn=airhole_fn);
     }
