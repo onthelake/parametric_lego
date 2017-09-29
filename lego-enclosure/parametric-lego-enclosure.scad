@@ -25,7 +25,7 @@ Import this into other design files:
     use <anker-usb-lego-enclosure.scad>
 */
 
-use <../parametric-lego.scad>
+use <../lego.scad>
 
 /* [LEGO Options plus Plastic and Printer Variance Adjustments] */
 
